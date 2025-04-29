@@ -477,3 +477,31 @@
     </script>
 </body>
 </html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMaT Admission Chatbot</title>
+    <style>
+        /* [All previous CSS styles remain exactly the same] */
+    </style>
+</head>
+<body>
+    <!-- [All previous HTML structure remains exactly the same] -->
+    
+    <script>
+        function generateResponse(userMessage) {
+            // Convert user message to lowercase for easier matching
+            const message = userMessage.toLowerCase();
+            
+            // [All other response conditions remain the same until the deadline section]
+            
+            else if (message.includes('deadline') || message.includes('closing date') || message.includes('application deadline')) {
+                return "This is to inform all prospective students that the closing date for the sale of Undergraduate Admission Forms for the 2024/2025 Academic Year is fast approaching. Kindly ensure that you complete your application before the close of Wednesday, 8th January 2025.";
+            }
+            
+            // [All remaining response conditions stay the same]
+        }
+    </script>
+</body>
+</html>
