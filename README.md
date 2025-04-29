@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMaT Admission Chatbot</title>
+    <style>
+        :root {
+            --umat-blue: #003366;
+            --umat-gold: #FFD700;
+            --umat-light-blue: #e6f2ff;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://umat.edu.gh/images/Media_Press/Publication/umat-at-glance.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.88);
+            z-index: -1;
+        }
+        
+        .header {
+            background-color: var(--umat-blue);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 4px solid var(--umat-gold);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 1000px;
+            width: 100%;
+        }
+        
+        .logo {
+            height: 70px;
+            margin-right: 15px;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+        }
+        
+        .header-text {
+            text-align: left;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            margin: 5px 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .chat-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid var(--umat-blue);
+            border-left: 5px solid var(--umat-blue);
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, var(--umat-blue), #004080);
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid var(--umat-gold);
+        }
+        
+        .chat-header img {
+            width: 30px;
+            margin-right: 10px;
+            filter: brightness(0) invert(1);
+        }
+        
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            line-height: 1.4;
+        }
+        
+        .bot-message {
+            background-color: var(--umat-light-blue);
+            border-top-left-radius: 5px;
+            align-self: flex-start;
+            border: 1px solid #cce0ff;
+        }
+        
+        .user-message {
+            background: linear-gradient(to right, #004080, var(--umat-blue));
+            color: white;
+            border-top-right-radius: 5px;
+            margin-left: auto;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+        
+        #user-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        #send-button {
+            background: linear-gradient(to right, var(--umat-blue), #004080);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin-left: 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+        }
+        
+        #send-button:hover {
+            background: linear-gradient(to right, #002b57, #003366);
+            transform: translateY(-1px);
+        }
+        
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+        
+        .quick-reply {
+            background-color: var(--umat-light-blue);
+            border: 1px solid #cce0ff;
+            border-radius: 15px;
+            padding: 8px 15px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .quick-reply:hover {
+            background-color: #d1e5ff;
+            transform: translateY(-1px);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px;
+            color: #666;
+            font-size: 14px;
+            background-color: white;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 0 0 8px 8px;
+            border-top: 1px solid #eee;
+        }
+
+        .course-list {
+            margin-left: 20px;
+        }
+
+        .faculty {
+            font-weight: bold;
+            margin-top: 10px;
+            color: var(--umat-blue);
+        }
+        
+        @media (max-width: 600px) {
+            .logo-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .chat-container {
+                margin: 10px;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <img src="https://umat.edu.gh/sites/default/files/logo.png" alt="UMaT Logo" class="logo">
+            <div class="header-text">
+                <h1>UMaT Online Admission Assistant</h1>
+                <p>University of Mines and Technology, Tarkwa</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="chat-container">
+        <div class="chat-header">
+            <img src="https://umat.edu.gh/sites/default/files/logo.png" alt="UMaT Logo" style="width:30px;height:30px;object-fit:contain;">
+            <span>Admission Bot</span>
+        </div>
+        
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot-message">
+                Hello! I'm the UMaT Admission Bot. How can I assist you today?
+            </div>
+            <div class="message bot-message">
+                You can ask me about:<br>
+                - Admission requirements<br>
+                - Application process<br>
+                - Programs offered<br>
+                - Deadlines<br>
+                - Fees and scholarships<br>
+                - Accommodation<br>
+                - International students
+            </div>
+        </div>
+        
+        <div class="quick-replies">
+            <div class="quick-reply" onclick="sendQuickReply('What are the admission requirements?')">Admission Requirements</div>
+            <div class="quick-reply" onclick="sendQuickReply('How do I apply?')">Application Process</div>
+            <div class="quick-reply" onclick="sendQuickReply('What programs are available?')">Programs Offered</div>
+            <div class="quick-reply" onclick="sendQuickReply('When is the application deadline?')">Deadlines</div>
+            <div class="quick-reply" onclick="sendQuickReply('Does UMaT offer scholarships?')">Scholarships</div>
+            <div class="quick-reply" onclick="sendQuickReply('Is there hostel accommodation?')">Accommodation</div>
+        </div>
+        
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Type your question here..." onkeypress="handleKeyPress(event)">
+            <button id="send-button" onclick="sendMessage()">Send</button>
+        </div>
+        
+        <div class="footer">
+            © 2023 University of Mines and Technology (UMaT) | All Rights Reserved
+        </div>
+    </div>
+    
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const message = userInput.value.trim();
+            
+            if (message !== '') {
+                // Display user message
+                displayMessage(message, 'user');
+                
+                // Process the message and generate bot response
+                const botResponse = generateResponse(message);
+                
+                // Display bot response after a short delay
+                setTimeout(() => {
+                    displayMessage(botResponse, 'bot');
+                }, 500);
+                
+                // Clear input field
+                userInput.value = '';
+            }
+        }
+        
+        function sendQuickReply(message) {
+            // Display user message
+            displayMessage(message, 'user');
+            
+            // Process the message and generate bot response
+            const botResponse = generateResponse(message);
+            
+            // Display bot response after a short delay
+            setTimeout(() => {
+                displayMessage(botResponse, 'bot');
+            }, 500);
+        }
+        
+        function displayMessage(message, sender) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+            
+            // Check if message contains faculty headings (marked with *)
+            if (message.includes('<div class="faculty">')) {
+                messageElement.innerHTML = message;
+            } else {
+                messageElement.textContent = message;
+            }
+            
+            chatMessages.appendChild(messageElement);
+            
+            // Scroll to the bottom of the chat
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        function generateResponse(userMessage) {
+            // Convert user message to lowercase for easier matching
+            const message = userMessage.toLowerCase();
+            
+            // Define responses for different questions
+            if (message.includes('requirement') || message.includes('admission') || message.includes('cut-off') || message.includes('cut off')) {
+                return "UMaT admission requirements vary by program. Generally, you need:\n\n" +
+                       "- WASSCE/SSSCE with credits (A1-C6) in core and relevant elective subjects\n" +
+                       "- Minimum aggregate of 36 for WASSCE or 24 for SSSCE\n" +
+                       "- For postgraduates, a good first degree in a relevant field\n\n" +
+                       "You can find detailed requirements for each program on our website.";
+            } 
+            else if (message.includes('apply') || message.includes('application')) {
+                return "To apply to UMaT:\n\n" +
+                       "1. Visit our admissions portal at admissions.umat.edu.gh\n" +
+                       "2. Create an account\n" +
+                       "3. Fill out the online application form\n" +
+                       "4. Upload required documents\n" +
+                       "5. Pay the application fee (GHC 200 for Ghanaians, $100 for internationals)\n" +
+                       "6. Submit your application\n\n" +
+                       "You'll receive a confirmation email with your application details.";
+            }
+            else if (message.includes('program') || message.includes('course') || message.includes('degree')) {
+                return `<div class="faculty">BSc & DIPLOMA PROGRAMMES AT MAIN CAMPUS, TARKWA:</div>
+                
+                <div class="faculty">Faculty of Mining and Minerals Engineering:</div>
+                <div class="course-list">
+                - BSc Mining Engineering<br>
+                - BSc Minerals Engineering
+                </div>
+                
+                <div class="faculty">Faculty of Engineering:</div>
+                <div class="course-list">
+                - BSc Mechanical Engineering<br>
+                - BSc Electrical and Electronic Engineering<br>
+                - BSc Renewable Energy Engineering<br>
+                - Diploma in Plant and Maintenance Engineering<br>
+                - Diploma in Electrical and Electronic Engineering
+                </div>
+                
+                <div class="faculty">Faculty of Computing and Mathematical Sciences:</div>
+                <div class="course-list">
+                - BSc Cyber Security<br>
+                - BSc Computer Science And Engineering<br>
+                - BSc Information Systems and Technology<br>
+                - BSc Mathematics<br>
+                - BSc Statistical Data Science
+                </div>
+                
+                <div class="faculty">Faculty Of Integrated Management Studies:</div>
+                <div class="course-list">
+                - BSc Logistics and Transport Management<br>
+                - BSc Economics and Industrial Organization
+                </div>
+                
+                <div class="faculty">Faculty of Geosciences and Environmental Studies:</div>
+                <div class="course-list">
+                - BSc Geomatic Engineering<br>
+                - BSc Geological Engineering<br>
+                - BSc Spatial Planning (New Programme)<br>
+                - BSc Environmental and Safety Engineering<br>
+                - BSc Land Administration and Information Systems<br>
+                - Diploma in General Drilling (Fee paying Programme)
+                </div>
+                
+                <div class="faculty">School of Petroleum Studies:</div>
+                <div class="course-list">
+                - BSc Petroleum Engineering (Fee paying Programme)<br>
+                - BSc Natural Gas Engineering<br>
+                - BSc Petroleum Geosciences and Engineering<br>
+                - BSc Petroleum Refining and Petrochemical Engineering<br>
+                - BSc Chemical Engineering
+                </div>`;
+            }
+            else if (message.includes('deadline') || message.includes('closing date')) {
+                return "This is to inform all prospective students that the deadline for the sale of Undergraduate Admission Forms for the 2024/2025 Academic Year is fast approaching. Kindly ensure that you complete your application before the close of Wednesday, 8th January 2025.";
+            }
+            else if (message.includes('fee') || message.includes('cost') || message.includes('tuition')) {
+                return "UMaT tuition fees vary by program. Approximate ranges:\n\n" +
+                       "- Ghanaian Undergraduates: GHC 2,500 - GHC 4,000 per semester\n" +
+                       "- International Students: $2,500 - $4,000 per semester\n\n" +
+                       "We offer scholarships and financial aid for qualified students.";
+            }
+            else if (message.includes('scholarship') || message.includes('financial aid')) {
+                return "UMaT offers several scholarships:\n\n" +
+                       "- **UMaT Academic Excellence Scholarship** (for top-performing students)\n" +
+                       "- **Government of Ghana Scholarships** (needs-based)\n" +
+                       "- **Industry-sponsored scholarships** (e.g., GNPC, Newmont, Gold Fields)\n\n" +
+                       "Check the UMaT website for application details.";
+            }
+            else if (message.includes('hostel') || message.includes('accommodation') || message.includes('housing')) {
+                return "Yes! UMaT provides hostel accommodation on campus, but spaces are limited. Many students also rent off-campus in Tarkwa.\n\n" +
+                       "Hostel fees range from **GHC 3,000 - GHC 5,300 per academic year**.";
+            }
+            else if (message.includes('international') || message.includes('foreign')) {
+                return "Yes! International students are welcome at UMaT. Requirements:\n\n" +
+                       "- Equivalent qualifications (e.g., IGCSE, IB, WASSCE/SSSCE equivalents)\n" +
+                       "- English proficiency (if from a non-English speaking country)\n" +
+                       "- Valid passport and student visa\n\n" +
+                       "Contact the International Office for assistance.";
+            }
+            else if (message.includes('transfer') || message.includes('change school')) {
+                return "Yes, transfer applications are considered based on:\n\n" +
+                       "- Your academic performance\n" +
+                       "- Program availability\n" +
+                       "- Approval from both institutions\n\n" +
+                       "Submit your transcripts and a transfer request letter to the Academic Affairs Office.";
+            }
+            else if (message.includes('vision') || message.includes('mission')) {
+                return "UMaT's vision is to be a **Centre of Excellence** in Ghana and Africa for producing world-class professionals in mining, petroleum, and technology fields.\n\n" +
+                       "Our mission is to provide **quality education and research** in these disciplines.";
+            }
+            else if (message.includes('location') || message.includes('where is umat')) {
+                return "UMaT's main campus is in **Tarkwa, Western Region, Ghana**. We also have a **School of Petroleum Studies in Takoradi**.";
+            }
+            else if (message.includes('public') || message.includes('private')) {
+                return "UMaT is a **public university** established by the Ghanaian government.";
+            }
+            else if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+                return "Hello! How can I assist you with your UMaT admission questions today?";
+            }
+            else if (message.includes('thank') || message.includes('thanks')) {
+                return "You're welcome! If you have any more questions about UMaT admissions, feel free to ask.";
+            }
+            else {
+                return "I'm sorry, I didn't understand your question. Could you please rephrase it? " +
+                       "You can ask about admission requirements, application process, programs offered, deadlines, or fees.";
+            }
+        }
+    </script>
+</body>
+</html>
